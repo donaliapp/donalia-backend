@@ -18,4 +18,32 @@ model User {
   password  String
   name      String
   createdAt DateTime @default(now())
+
+  posts Post[]
+
+  @@map("users")
 }
+
+model Post {
+  id           Int           @id @default(autoincrement())
+  title        String
+  description  String
+  category     PostCategory
+  rewardAmount Float?
+  location     String?
+  createdAt    DateTime      @default(now())
+
+  authorId Int
+  author   User @relation(fields: [authorId], references: [id])
+
+  @@map("posts")
+}
+enum PostCategory {
+  PRODUCT
+  JOB
+  HELP
+  HOUSING
+  TRANSPORT
+  VOLUNTEERING
+}
+
