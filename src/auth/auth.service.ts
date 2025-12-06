@@ -2,27 +2,29 @@ import { BadRequestException, Injectable, UnauthorizedException } from '@nestjs/
 import { PrismaService } from '../prisma/prisma.service';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
+import { RegisterUserDto } from './dto/register-user.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class AuthService {
     constructor(private prisma: PrismaService, private jwtService: JwtService) { }
 
-    async register(email: string, password: string, name: string) {
+    async register(registerUserDto: RegisterUserDto) {
         //1. Vemos si el usuario ya existe
-        const existingUser = await this.prisma.user.findUnique({ where: { email } });
+        const existingUser = await this.prisma.user.findUnique({ where: { email: registerUserDto.email } });
         if (existingUser) {
             throw new BadRequestException('User already exists');
         }
         //2. Hasheamos la contraseña
         const saltOrRounds = 10;
-        const hashedPassword = await bcrypt.hash(password, saltOrRounds);
+        const hashedPassword = await bcrypt.hash(registerUserDto.password, saltOrRounds);
 
         //3. Creamos el usuario
         const user = await this.prisma.user.create({
             data: {
-                email,
+                email: registerUserDto.email,
                 password: hashedPassword,
-                name,
+                name: registerUserDto.name,
             },
         });
 
@@ -37,14 +39,14 @@ export class AuthService {
         }
     }
 
-    async login(email: string, password: string) {
+    async login(loginUserDto: LoginUserDto) {
         //1. Vemos si el usuario existe
-        const existingUser = await this.prisma.user.findUnique({ where: { email } });
+        const existingUser = await this.prisma.user.findUnique({ where: { email: loginUserDto.email } });
         if (!existingUser) {
             throw new BadRequestException('User not found, please register first');
         }
         //2. Comparar contraseñas
-        const passwordMatch = await bcrypt.compare(password, existingUser.password);
+        const passwordMatch = await bcrypt.compare(loginUserDto.password, existingUser.password);
         if (!passwordMatch) {
             throw new UnauthorizedException('Invalid credentials');
         }
