@@ -29,6 +29,7 @@ model Post {
   title        String
   description  String
   category     PostCategory
+  type    PostType @default(NEED)
   rewardAmount Float?
   location     String?
   createdAt    DateTime      @default(now())
@@ -45,5 +46,9 @@ enum PostCategory {
   HOUSING
   TRANSPORT
   VOLUNTEERING
+}
+enum PostType {
+  OFFER
+  NEED
 }
 

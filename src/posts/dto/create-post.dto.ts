@@ -6,7 +6,7 @@ import {
     IsString,
     IsDefined,
 } from 'class-validator';
-import { PostCategory } from '@prisma/client';
+import { PostCategory, PostType } from '@prisma/client';
 
 export class CreatePostDto {
     @IsString({ message: 'title must be a string' })
@@ -20,6 +20,10 @@ export class CreatePostDto {
     @IsDefined({ message: 'category is required' })
     @IsEnum(PostCategory, { message: 'category must be a valid PostCategory' })
     category: PostCategory;
+
+    @IsDefined({ message: 'type is required' })
+    @IsEnum(PostType, { message: 'type must be NEED or OFFER' })
+    type: PostType;
 
     @IsOptional()
     @IsNumber({}, { message: 'rewardAmount must be a number' })

@@ -2,11 +2,16 @@
 import { IsEnum, IsInt, IsOptional, IsString, Min } from 'class-validator';
 import { Type } from 'class-transformer';
 import { PostCategory } from '@prisma/client';
+import { PostType } from '@prisma/client';
 
 export class FilterPostsDto {
     @IsOptional()
     @IsEnum(PostCategory, { message: 'category must be a valid PostCategory' })
     category?: PostCategory;
+
+    @IsOptional()
+    @IsEnum(PostType, { message: 'type must be a valid PostType' })
+    type?: PostType;
 
     @IsOptional()
     @IsString({ message: 'location must be a string' })
